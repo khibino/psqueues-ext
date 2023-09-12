@@ -16,6 +16,8 @@ module Data.OrdPSQ.Internal
     , size
     , member
     , lookup
+    , lookupLE
+    , lookupGT
     , findMin
 
       -- * Construction
@@ -70,6 +72,7 @@ module Data.OrdPSQ.Internal
     , valid
     ) where
 
+import           Control.Applicative ((<|>))
 import           Control.DeepSeq  (NFData (rnf))
 import           Data.Foldable    (Foldable (foldl'))
 import qualified Data.List        as List
@@ -165,6 +168,36 @@ lookup k = go
             | otherwise      -> Nothing
         Play tl tr
             | k <= maxKey tl -> go tl
+            | otherwise      -> go tr
+
+-- | /O(log n) * O(log n)/
+lookupLE :: (Ord k) => k -> OrdPSQ k p v -> Maybe (k, p, v)
+lookupLE k = go
+  where
+    go t = case tourView t of
+        Null      ->  Nothing
+        Single (E k' p v)
+           | k' <= k    -> Just (k', p, v)
+           | otherwise  -> Nothing
+        Play tl tr
+            | k <= maxKey tl -> go tl
+            | otherwise      -> go tr <|> go tl  {- O(log n) `<|>` chains -}
+           {-
+            | k <  minKey tr -> go tl
+            | otherwise      -> go tr
+            -}
+
+-- | /O(log n)/
+lookupGT :: (Ord k) => k -> OrdPSQ k p v -> Maybe (k, p, v)
+lookupGT k = go
+  where
+    go t = case tourView t of
+        Null      ->  Nothing
+        Single (E k' p v)
+           | k' > k     -> Just (k', p, v)
+           | otherwise  -> Nothing
+        Play tl tr
+            | k <  maxKey tl -> go tl
             | otherwise      -> go tr
 
 -- | /O(1)/ The element with the lowest priority.
