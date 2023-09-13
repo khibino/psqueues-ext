@@ -22,6 +22,8 @@ module Data.OrdPSQ
     , size
     , member
     , lookup
+    , lookupLE
+    , lookupGT
     , findMin
 
       -- * Construction
