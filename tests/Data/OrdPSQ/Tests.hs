@@ -29,6 +29,8 @@ tests =
     , testProperty "toAscList"     prop_toAscList
     , testProperty "lookupLE"      prop_lookupLE
     , testProperty "lookupGT"      prop_lookupGT
+    , testProperty "lookupLT"      prop_lookupLT
+    , testProperty "lookupGE"      prop_lookupGE
     ]
 
 
@@ -211,3 +213,27 @@ rangesGT psq = nothingsNullPSQ psq $ ([justEnd minRange] ++ [just cr | cr <- crs
     just    (n, x)  = ((n, x - 1), x)
     justEnd         = just
     nothing (n, x)  =  (n, x)
+
+---
+
+prop_lookupLT :: OrdPSQ Int Int Char -> Property
+prop_lookupLT = lookupLG_expects "lookupLT" lookupLT rangesLT
+
+rangesLT :: OrdPSQ Int p v -> LGRanges Int
+rangesLT psq = nothingsNullPSQ psq ([just r | r <- rs] ++ [justEnd maxRange], nothing minRange)
+  where
+    (minRange, rs, maxRange) = keyIntervals psq
+    just    (n, x)  = ((n + 1, x), n)
+    justEnd         = just
+    nothing (n, x)  =  (n    , x)
+
+prop_lookupGE :: OrdPSQ Int Int Char -> Property
+prop_lookupGE = lookupLG_expects "lookupGE" lookupGE rangesGE
+
+rangesGE :: OrdPSQ Int p v -> LGRanges Int
+rangesGE psq = nothingsNullPSQ psq ([justEnd minRange] ++ [just r | r <- rs], nothing maxRange)
+  where
+    (minRange, rs, maxRange) = keyIntervals psq
+    just    (n, x)  = ((n + 1, x), x)
+    justEnd (n, x)  = ((n    , x), x)
+    nothing (n, x)  =  (n + 1, x)
