@@ -1,4 +1,4 @@
-Name:          psqueues
+Name:          psqueues-ext
 Version:       0.2.8.0
 License:       BSD3
 License-file:  LICENSE
@@ -58,7 +58,7 @@ Extra-source-files:
 
 Source-repository head
     type:     git
-    location: http://github.com/jaspervdj/psqueues.git
+    location: http://github.com/khibino/psqueues-ext.git
 
 Library
     Default-language: Haskell2010
@@ -116,7 +116,7 @@ Benchmark psqueues-benchmarks
         , deepseq
         , ghc-prim
         , hashable
-        , psqueues
+        , psqueues-ext
 
 Test-suite psqueues-tests
     Cpp-options:      -DTESTING -DSTRICT
@@ -154,5 +154,5 @@ Test-suite psqueues-tests
         , deepseq
         , ghc-prim
         , hashable
-        , psqueues
+        , psqueues-ext
         , tagged
